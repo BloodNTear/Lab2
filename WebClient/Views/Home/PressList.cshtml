@@ -1,0 +1,389 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+<style>
+	.text-center {
+		text-align: center;
+	}
+
+	#container {
+		margin-top: 20px;
+	}
+
+	#bookTable {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	thead {
+		font-weight: bold;
+		background-color: azure;
+	}
+
+	#bookTable th,
+	#bookTable td {
+		padding: 8px;
+		border: 1px solid #ddd;
+	}
+
+	#bookTable th {
+		background-color: #f2f2f2;
+		font-weight: bold;
+	}
+
+	#deleteButton {
+		background-color: #ff0000;
+		color: #fff;
+		padding: 5px 10px;
+		border: none;
+		cursor: pointer;
+	}
+
+		#deleteButton:hover {
+			background-color: #cc0000;
+		}
+
+	#editButton {
+		background-color: #3366cc;
+		color: #fff;
+		padding: 5px 10px;
+		border: none;
+		cursor: pointer;
+	}
+
+		#editButton:hover {
+			background-color: #225599;
+		}
+
+	#addButton {
+		background-color: #28a745;
+		color: #fff;
+		padding: 5px 10px;
+		border: none;
+		cursor: pointer;
+	}
+
+		#addButton:hover {
+			background-color: #218838;
+		}
+
+
+
+	.modal {
+		display: block;
+		position: fixed;
+		z-index: 9999;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	.modal-content {
+		background-color: #fefefe;
+		margin: 10% auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 60%;
+		max-width: 500px;
+	}
+
+		.modal-content label {
+			display: block;
+			margin-bottom: 10px;
+			font-weight: bold;
+		}
+
+		.modal-content input {
+			width: 100%;
+			padding: 5px;
+			margin-bottom: 10px;
+		}
+
+		.modal-content .close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			font-size: 20px;
+			font-weight: bold;
+			border: none;
+			background-color: transparent;
+			cursor: pointer;
+		}
+
+	.close:hover {
+		color: red;
+	}
+
+	.save {
+		background-color: #4CAF50;
+		color: white;
+		padding: 8px 16px;
+		border: none;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: bold;
+	}
+
+		.save:hover {
+			background-color: #45a049;
+		}
+
+</style>
+
+<div class="text-center">
+	<div id="container">
+		<h2>Edit Presses</h2>
+		<table class="table table-striped table-bordered" id="bookTable">
+			<thead>
+				<tr>
+					<td>Press Name</td>
+					<td>Category</td>
+					<td>Edit</td>
+					<td>Delete</td>
+				</tr>
+			</thead>
+			<tbody id="dataContainer">
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+<script>
+	var presses = [];
+	const categories = ["Book", "Magazine", "eBook", "Journal", "Newspaper", "Comic", "Novel", "Manga", "Hentai"]; //Book = 0, Magazine = 1, eBook = 2
+
+	$(document).ready(function () {
+
+		$.ajax({
+			url: "https://localhost:7130/odata/Press",
+			type: "GET",
+			dataType: "json",
+			headers: {
+				"Authorization": localStorage.getItem("jwtToken")
+			},
+			data: { "$expand": "Books" },
+			success: function (data) {
+				data.value.forEach(function (press) {
+					presses.push(press);
+				});
+
+				AppendTable(presses);
+			},
+			error: function (xhr, status, error) {
+				alert(error);
+			}
+		});
+
+	});
+
+	function AppendTable(presses) {
+
+		presses.forEach(function (press) {
+
+			var newRow = $('<tr>');
+
+			newRow.append($('<td>').text(press.Name));
+			newRow.append($('<td>').text(press.Category));
+
+			var editButtonCell = $('<td>');
+
+			editButtonCell.append($('<button>').text('Edit').attr('id', 'editButton').click(function () {
+				editModal(press);
+			}));
+
+			newRow.append(editButtonCell);
+
+			var deleteButtonCell = $('<td>');
+			deleteButtonCell.append($('<button>').text('Delete').attr('id', 'deleteButton').click(function () {
+
+				console.log(press);
+
+				if(press.Books.length > 0) {
+					alert("Press has books, cannot delete");
+					return;
+				};
+
+				if (confirm("Are you sure?")) {
+
+					$.ajax({
+						url: "https://localhost:7130/odata/Press" + "/" + press.ID,
+						type: "DELETE",
+						dataType: "json",
+						contentType: "application/json; charset=utf-8",
+						headers: {
+							"Authorization": localStorage.getItem("jwtToken")
+						},
+						success: function (data) {
+							if (data.status) {
+								alert("Remove Successfully");
+								window.location.reload();
+							} else {
+								alert(data.errorMessage);
+							}
+						},
+						error: function (data) {
+							alert(data.errorMessage);
+						}
+					});
+
+				}
+
+			}));
+
+			newRow.append(deleteButtonCell);
+
+			$('#dataContainer').append(newRow);
+
+		});
+
+		var addRow = $('<tr>');
+
+		addRow.append($('<td>').append($('<button>').text('Add').attr('id', 'addButton')));
+
+		addRow.click(function () {
+			addBookModal();
+		});
+
+		$('#dataContainer').append(addRow);
+	}
+
+	function addBookModal() {
+		var addModal = $('<div>').addClass('modal');
+
+		var addModalContent = $('<div>').addClass('modal-content');
+
+		var addCloseButton = $('<span>').addClass('close').text('×').click(function () {
+			addModal.remove();
+		});
+
+		addModalContent.append(addCloseButton);
+
+		var pressNameInputForAdd = $('<input>').attr('type', 'text').attr('id', 'pressNameInputForAdd');
+		var categoryInputForAdd = $('<select>').attr('id', 'categoryInputForAdd');
+	
+		for (var j = 0; j < categories.length; j++) {
+			var option = $('<option>').attr('value', j).text(categories[j]);
+			if (j == 0) {
+				option.attr('selected', 'selected');
+			}
+			categoryInputForAdd.append(option);
+		};
+
+		addModalContent.append($('<label>').text('Press Name:').append(pressNameInputForAdd));
+		addModalContent.append($('<label>').text('Category:').append(categoryInputForAdd));
+
+		addModal.append(addModalContent);
+
+		var saveButton = $('<button>').addClass('save').text('Save').click(function () {
+
+			newPress = {
+				ID: "2dfe52c0-bda8-4b0c-b60f-a401f7590c88",
+				Name: $('#pressNameInputForAdd').val(),
+				Category: $('#categoryInputForAdd').val(),
+			};
+
+			var dataToSend = JSON.stringify(newPress);
+
+			$.ajax({
+
+				url: "https://localhost:7130/odata/Press",
+				type: "POST",
+				headers: {
+					"Authorization": localStorage.getItem("jwtToken")
+				},
+				dataType: "json",
+				contentType: "application/json",
+				data: dataToSend,
+				success: function (data) {
+					if (data.status) {
+						alert("Saved");
+						window.location.reload();
+					} else {
+						alert(data.errorMessage);
+					}
+				}, error: function (error) {
+					alert(error);
+				}
+
+			});
+		});
+
+		addModalContent.append(saveButton);
+
+
+		$('#container').append(addModal);
+	}
+
+	function editModal(press) {
+
+
+		var modal = $('<div>').addClass('modal');
+
+		var modalContent = $('<div>').addClass('modal-content');
+
+		var closeButton = $('<span>').addClass('close').text('×').click(function () {
+			modal.remove();
+		});
+
+		modalContent.append(closeButton);
+
+		var pressNameInput = $('<input>').attr('type', 'text').attr('id', 'pressNameInput').val(press.Name);
+		var categoryInput = $('<select>').attr('id', 'categoryInput');
+
+		for (var j = 0; j < categories.length; j++) {
+			var option = $('<option>').attr('value', j).text(categories[j]);
+			if (j == 0) {
+				option.attr('selected', 'selected');
+			}
+			categoryInput.append(option);
+		};
+
+		modalContent.append($('<label>').text('Press Name:').append(pressNameInput));
+		modalContent.append($('<label>').text('Category:').append(categoryInput));
+
+		modal.append(modalContent);
+
+		var saveButton = $('<button>').addClass('save').text('Save').click(function () {
+
+			press.Name = $('#pressNameInput').val();
+			press.Category = $('#categoryInput').val();
+
+			var dataToSend = JSON.stringify(press);
+
+			$.ajax({
+
+				url: "https://localhost:7130/odata/Press",
+				type: "PATCH",
+				headers: {
+					"Authorization": localStorage.getItem("jwtToken")
+				},
+				dataType: "json",
+				contentType: "application/json",
+				data: dataToSend,
+				success: function (data) {
+					if (data.status) {
+						alert("Saved");
+						window.location.reload();
+					} else {
+						alert(data.errorMessage);
+					}
+				}, error: function (error) {
+					alert(error);
+				}
+
+			});
+		});
+
+		modalContent.append(saveButton);
+
+
+		console.log(modal);
+		$('#container').append(modal);
+	}
+</script>

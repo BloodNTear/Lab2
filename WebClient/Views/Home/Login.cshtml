@@ -1,0 +1,111 @@
+﻿
+<head>
+    <title>Login Page</title>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2 id="title">Login</h2>
+        <div>
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <div>
+                <button type="button" onclick="login()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+            button:hover {
+                background-color: #45a049;
+            }
+    </style>
+</body>
+
+
+<script>
+    function login(){
+        var username = $('#username').val();
+        var password = $('#password').val();
+        
+        var jsonData = {
+			username : username,
+			password : password
+		};
+
+        $.ajax({
+            url: "https://localhost:7130/odata/Account",
+            type: "POST",
+            dataType: "json",
+            data: JSON.stringify(jsonData),
+            contentType: "application/json; charset=utf-8",
+   
+            success: function (data) {
+				if(data.status){
+                    localStorage.setItem("jwtToken", data.accessToken);
+
+                    window.location.href = "/Home/BookList";
+
+                }else{
+                    alert(data.errorMessage)
+                }
+			},
+			error: function (xhr, status, error) {
+				alert(error);
+			}
+        });
+
+    }
+</script>
