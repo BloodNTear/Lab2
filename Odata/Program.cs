@@ -4,6 +4,7 @@ using DataLayer.Models;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using Microsoft.OpenApi.Models;
 using Odata.JWT;
 using Repository.Entities;
 using System.Runtime.CompilerServices;
@@ -16,7 +17,33 @@ builder.Services.AddControllers().AddOData(
     odata => odata.Select().Filter().Expand().OrderBy().AddRouteComponents("odata", GetEDM()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+	options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+	{
+		Type = SecuritySchemeType.Http,
+		Scheme = "bearer",
+		BearerFormat = "JWT",
+		In = ParameterLocation.Header,
+		Description = "Enter the JWT token obtained from the login endpoint",
+		Name = "Authorization"
+	});
+	options.AddSecurityRequirement(new OpenApiSecurityRequirement
+		{
+			{
+				new OpenApiSecurityScheme
+				{
+					Reference = new OpenApiReference
+					{
+						Type = ReferenceType.SecurityScheme,
+						Id = "Bearer"
+					}
+				},
+				Array.Empty<string>()
+			}
+		});
+});
 
 builder.Services.AddDbContext<DataLayer.DatabaseContext>();
 

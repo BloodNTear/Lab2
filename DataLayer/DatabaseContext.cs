@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repository.Entities;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace DataLayer
 {
@@ -109,7 +110,85 @@ namespace DataLayer
                 AddressCity = "Ha Noi"
 			};
 
-            modelBuilder.Entity<Book>().HasData(philosophy, physics, scifi);
+			Book book1 = new Book()
+			{
+				ID = Guid.NewGuid(),
+				ISBN = "978-3-16-148410-0",
+				Title = "Science Fiction",
+				Author = "Aristotle",
+				Price = 150000,
+				PressId = Guid.Parse("d75cefaf-2361-4251-a2ff-6cbe36182899"),
+				AddressCity = "Ha Noi"
+			};
+
+			Book book2 = new Book()
+			{
+				ID = Guid.NewGuid(),
+				ISBN = "978-1-23-456789-0",
+				Title = "The Galactic Voyage",
+				Author = "Stella Blackwood",
+				Price = 87500,
+				PressId = Guid.Parse("d75cefaf-2361-4251-a2ff-6cbe36182899"),
+				AddressCity = "Ha Noi"
+			};
+
+			Book book3 = new Book()
+			{
+				ID = Guid.NewGuid(),
+				ISBN = "978-9-87-654321-0",
+				Title = "Time Rift Chronicles",
+				Author = "Nathan Greenfield",
+				Price = 203750,
+				PressId = Guid.Parse("d75cefaf-2361-4251-a2ff-6cbe36182899"),
+				AddressCity = "Ha Noi"
+			};
+
+			Book book4 = new Book()
+			{
+				ID = Guid.NewGuid(),
+				ISBN = "978-5-55-555555-0",
+				Title = "Cybernetic Dreams",
+				Author = "Erika Silverstone",
+				Price = 121250,
+				PressId = Guid.Parse("d75cefaf-2361-4251-a2ff-6cbe36182899"),
+				AddressCity = "Ha Noi"
+			};
+
+			Book book5 = new Book()
+			{
+				ID = Guid.NewGuid(),
+				ISBN = "978-2-22-333333-0",
+				Title = "Quantum Paradox",
+				Author = "Oliver Armstrong",
+				Price = 185900,
+				PressId = Guid.Parse("d75cefaf-2361-4251-a2ff-6cbe36182899"),
+				AddressCity = "Ha Noi"
+			};
+
+			Book book6 = new Book()
+			{
+				ID = Guid.NewGuid(),
+				ISBN = "978-0-98-765432-0",
+				Title = "Stellar Convergence",
+				Author = "Maya Thompson",
+				Price = 92800,
+				PressId = Guid.Parse("d75cefaf-2361-4251-a2ff-6cbe36182899"),
+				AddressCity = "Ha Noi"
+			};
+
+			Book book7 = new Book()
+			{
+				ID = Guid.NewGuid(),
+				ISBN = "978-7-77-777777-0",
+				Title = "Galactic Empire",
+				Author = "Benjamin Hartman",
+				Price = 176300,
+				PressId = Guid.Parse("d75cefaf-2361-4251-a2ff-6cbe36182899"),
+				AddressCity = "Ha Noi"
+			};
+
+			modelBuilder.Entity<Book>().HasData(philosophy, physics, scifi);
+			modelBuilder.Entity<Book>().HasData(book1, book2, book3, book4, book5, book6, book7);
 		}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

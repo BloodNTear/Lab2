@@ -27,10 +27,11 @@ namespace Odata.JWT
 			else
 			{
 				string jwtString = requestHeader["Authorization"];
+				string tokenString = jwtString.Substring("Bearer ".Length).Trim();
 
 				try
 				{
-					var token = new JwtSecurityTokenHandler().ReadJwtToken(jwtString);
+					var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
 
 					int userRole = -1;
 

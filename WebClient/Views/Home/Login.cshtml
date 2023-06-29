@@ -94,7 +94,7 @@
    
             success: function (data) {
 				if(data.status){
-                    localStorage.setItem("jwtToken", data.accessToken);
+                    localStorage.setItem("jwtToken", "Bearer " + data.accessToken);
 
                     window.location.href = "/Home/BookList";
 
