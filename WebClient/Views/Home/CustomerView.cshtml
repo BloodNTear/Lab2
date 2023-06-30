@@ -348,11 +348,11 @@
 
 		var title = $('<td>').text('Title');
 
-		var number = $('<td>').text('Number');
+		var price = $('<td>').text('Price');
 
 		var remove = $('<td>').text('Remove');
 
-		thead.append(headrow.append(title).append(number).append(remove));
+		thead.append(headrow.append(title).append(price).append(remove));
 
 		table.append(thead);
 
@@ -363,7 +363,7 @@
 
 			var title = $('<td>').text(book.Title);
 
-			var number = $('<td>').text('1');
+			var price = $('<td>').text(book.Price);
 
 			var remove = $('<td>').text('×').click(function () {
 				cart.splice(cart.indexOf(book), 1);
@@ -372,15 +372,19 @@
 				row.remove();
 			});
 
-			tbody.append(row.append(title).append(number).append(remove));
+			tbody.append(row.append(title).append(price).append(remove));
 		});
 
 		var checkoutButton = $('<button>').text('Checkout').click(function () {
-			cart.splice(0, cart.length);
-			cartCount = 0;
-			$('#cartCount').text(cartCount);
-			alert('Checkout successful!');
-			modal.remove();
+			if (confirm('That will be total of ' + cart.reduce(function (a, b) { return a + b.Price; }, 0) + ' VND')) {
+				alert('Check out Successfully');
+				cart.splice(0, cart.length);
+				cartCount = 0;
+				$('#cartCount').text(cartCount);
+				modal.remove();
+			}else{
+				return;
+			}
 		});
 
 		modalContent.append(table.append(tbody));
