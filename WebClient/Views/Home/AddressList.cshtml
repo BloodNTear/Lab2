@@ -163,6 +163,7 @@
 			url: "https://localhost:7130/odata/Address",
 			type: "GET",
 			dataType: "json",
+			data: { "$expand": "Books" },
 			headers: {
 				"Authorization": localStorage.getItem("jwtToken")
 			},
@@ -200,7 +201,7 @@
 			var deleteButtonCell = $('<td>');
 			deleteButtonCell.append($('<button>').text('Delete').attr('id', 'deleteButton').click(function () {
 
-				if(address.Books.length > 0) {
+				if (address.Books.length > 0) {
 					alert("Can't delete this address because it has books");
 					return;
 				};
