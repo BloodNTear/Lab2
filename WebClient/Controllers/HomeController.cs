@@ -23,5 +23,10 @@ namespace WebClient.Controllers
 		{
 			return View("BookList");
 		}
+
+		public IActionResult CustomerView()
+		{
+			return View("CustomerView");
+		}
 	}
 }

@@ -35,7 +35,8 @@ namespace Odata.Controllers
 				return new JsonResult(new
 				{
 					status = true,
-					AccessToken = token
+					AccessToken = token,
+					Role = user.Role
 				});
 			}
 		}

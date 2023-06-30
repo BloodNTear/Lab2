@@ -22,7 +22,7 @@ namespace Odata.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            if(_jwt.CheckRole(1) || _jwt.CheckRole(2))
+            if(_jwt.CheckRole(1) || _jwt.CheckRole(2) || _jwt.CheckRole(3))
             {
 				return Ok(_repository.GetAll().AsQueryable());
             }

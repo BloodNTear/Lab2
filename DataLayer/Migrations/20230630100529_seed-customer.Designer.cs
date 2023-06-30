@@ -4,6 +4,7 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230630100529_seed-customer")]
+    partial class seedcustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,12 +53,6 @@ namespace DataLayer.Migrations
                             Username = "staff",
                             Password = "staff",
                             Role = 2
-                        },
-                        new
-                        {
-                            Username = "customer",
-                            Password = "customer",
-                            Role = 3
                         });
                 });
 
@@ -154,7 +151,7 @@ namespace DataLayer.Migrations
                         },
                         new
                         {
-                            ID = new Guid("c364fcbc-c19f-4ff9-9972-9290226d46f5"),
+                            ID = new Guid("701629b1-8da3-466f-9918-e850956fb911"),
                             AddressCity = "Ha Noi",
                             Author = "Aristotle",
                             ISBN = "978-3-16-148410-0",
@@ -164,7 +161,7 @@ namespace DataLayer.Migrations
                         },
                         new
                         {
-                            ID = new Guid("d197437c-f28f-4c64-967d-d9f62c943e62"),
+                            ID = new Guid("d8300ac5-7ac5-4ca1-9d20-87fa34980af1"),
                             AddressCity = "Ha Noi",
                             Author = "Stella Blackwood",
                             ISBN = "978-1-23-456789-0",
@@ -174,7 +171,7 @@ namespace DataLayer.Migrations
                         },
                         new
                         {
-                            ID = new Guid("2e662bd7-17f0-4f71-9236-408a413badc8"),
+                            ID = new Guid("65f7d88c-d1ea-4a42-8ff4-4c3e1f3bade2"),
                             AddressCity = "Ha Noi",
                             Author = "Nathan Greenfield",
                             ISBN = "978-9-87-654321-0",
@@ -184,7 +181,7 @@ namespace DataLayer.Migrations
                         },
                         new
                         {
-                            ID = new Guid("f0858110-d3ac-4f5d-8d37-5d23df8354c7"),
+                            ID = new Guid("9d8c7115-89cc-47f8-980f-ffb02a8de248"),
                             AddressCity = "Ha Noi",
                             Author = "Erika Silverstone",
                             ISBN = "978-5-55-555555-0",
@@ -194,7 +191,7 @@ namespace DataLayer.Migrations
                         },
                         new
                         {
-                            ID = new Guid("795a174f-4e53-4954-8f20-aefd439a3c96"),
+                            ID = new Guid("a088fbfa-a0e3-4762-9fd4-80be40162175"),
                             AddressCity = "Ha Noi",
                             Author = "Oliver Armstrong",
                             ISBN = "978-2-22-333333-0",
@@ -204,7 +201,7 @@ namespace DataLayer.Migrations
                         },
                         new
                         {
-                            ID = new Guid("a5bd69ca-7ca1-4e95-b861-1e5145592361"),
+                            ID = new Guid("c0e10b86-80e4-40b6-9e6b-2a761df7525e"),
                             AddressCity = "Ha Noi",
                             Author = "Maya Thompson",
                             ISBN = "978-0-98-765432-0",
@@ -214,7 +211,7 @@ namespace DataLayer.Migrations
                         },
                         new
                         {
-                            ID = new Guid("1a90b265-4bee-4406-acd4-e93401a0e9c8"),
+                            ID = new Guid("df9dd9c9-8a09-477b-bbe9-4860b2cbc89e"),
                             AddressCity = "Ha Noi",
                             Author = "Benjamin Hartman",
                             ISBN = "978-7-77-777777-0",

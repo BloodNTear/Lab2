@@ -36,8 +36,14 @@ namespace DataLayer
                 Password = "staff",
                 Role = 2
             };
+			User customer = new User()
+			{
+				Username = "customer",
+				Password = "customer",
+				Role = 3
+			};
 
-            modelBuilder.Entity<User>().HasData(admin, staff);
+            modelBuilder.Entity<User>().HasData(admin, staff, customer);
 
             Press eBook = new Press()
             {

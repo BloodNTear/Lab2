@@ -96,8 +96,21 @@
 				if(data.status){
                     localStorage.setItem("jwtToken", "Bearer " + data.accessToken);
 
-                    window.location.href = "/Home/BookList";
-
+                    switch (data.role){
+						case 1:
+                            window.location.href = "/Home/BookList";
+							break;
+                        case 2:
+                            window.location.href = "/Home/CustomerView";
+                            break;
+						case 3:
+                            window.location.href = "/Home/CustomerView";
+							break;
+						default:
+							window.location.href = "/Error";
+							break;
+					}
+ 
                 }else{
                     alert(data.errorMessage)
                 }

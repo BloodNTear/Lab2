@@ -1,0 +1,429 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+<style>
+	.text-center {
+		text-align: center;
+	}
+
+	#container {
+		margin-top: 20px;
+	}
+
+	#bookTable {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	thead {
+		font-weight: bold;
+		background-color: azure;
+	}
+
+	#bookTable th,
+	#bookTable td {
+		padding: 8px;
+		border: 1px solid #ddd;
+	}
+
+	#bookTable th {
+		background-color: #f2f2f2;
+		font-weight: bold;
+	}
+
+	#deleteButton {
+		background-color: #ff0000;
+		color: #fff;
+		padding: 5px 10px;
+		border: none;
+		cursor: pointer;
+	}
+
+		#deleteButton:hover {
+			background-color: #cc0000;
+		}
+
+	#editButton {
+		background-color: #3366cc;
+		color: #fff;
+		padding: 5px 10px;
+		border: none;
+		cursor: pointer;
+	}
+
+		#editButton:hover {
+			background-color: #225599;
+		}
+
+	#addButton {
+		background-color: #28a745;
+		color: #fff;
+		padding: 5px 10px;
+		border: none;
+		cursor: pointer;
+	}
+
+		#addButton:hover {
+			background-color: #218838;
+		}
+
+
+
+	.modal {
+		display: block;
+		position: fixed;
+		z-index: 9999;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	.modal-content {
+		background-color: #fefefe;
+		margin: 10% auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 60%;
+		max-width: 500px;
+	}
+
+		.modal-content label {
+			display: block;
+			margin-bottom: 10px;
+			font-weight: bold;
+		}
+
+		.modal-content input {
+			width: 100%;
+			padding: 5px;
+			margin-bottom: 10px;
+		}
+
+		.modal-content .close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			font-size: 20px;
+			font-weight: bold;
+			border: none;
+			background-color: transparent;
+			cursor: pointer;
+		}
+
+	.close:hover {
+		color: red;
+	}
+
+	.save {
+		background-color: #4CAF50;
+		color: white;
+		padding: 8px 16px;
+		border: none;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: bold;
+	}
+
+		.save:hover {
+			background-color: #45a049;
+		}
+
+	.pagination {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+	}
+
+	.page-link {
+		padding: 8px 12px;
+		text-decoration: none;
+		color: #333;
+		background-color: #f5f5f5;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		margin: 0 4px;
+	}
+
+		.page-link:hover {
+			background-color: #e0e0e0;
+		}
+
+		.page-link:first-child {
+			margin-left: 0;
+		}
+
+		.page-link:last-child {
+			margin-right: 0;
+		}
+
+	#searchBar {
+		margin-bottom: 20px;
+		display: flex;
+		align-items: center;
+	}
+
+		#searchBar label {
+			padding: 5px;
+			border: 1px solid #ccc;
+			background-color: lightyellow;
+			border-radius: 4px;
+			margin-right: 10px;
+		}
+
+		#searchBar input[type="text"] {
+			width: 200px;
+			padding: 5px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+	.shopping-cart {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		background-color: #f1f1f1;
+		padding: 10px;
+		border-radius: 50%;
+		font-size: 20px;
+		color: #555;
+		cursor: pointer;
+	}
+
+	.cart-icon {
+		display: inline-block;
+		vertical-align: middle;
+	}
+
+	.cart-count {
+		display: inline-block;
+		vertical-align: middle;
+		margin-left: 5px;
+		font-weight: bold;
+	}
+
+
+</style>
+
+<div class="text-center">
+	<div id="container">
+		<h2>Available Books</h2>
+
+		<div class="shopping-cart" onclick="OpenCart()">
+			<span class="cart-icon">&#128722;</span>
+			<span class="cart-count" id="cartCount">0</span>
+		</div>
+
+
+		<div id="searchBar">
+			<label for="searchInput">Search:</label>
+			<input type="text" id="searchInput">
+		</div>
+		<table class="table table-striped table-bordered" id="bookTable">
+			<thead>
+				<tr>
+					<td>Title</td>
+					<td>Author</td>
+					<td>Price</td>
+					<td>Press</td>
+					<td>Category</td>
+					<td>ISBN</td>
+					<td>City</td>
+					<td>Street</td>
+					<td>Add to Cart</td>
+				</tr>
+			</thead>
+			<tbody id="dataContainer">
+			</tbody>
+		</table>
+		<div class="pagination" id="paginationItem">
+		</div>
+
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+<script>
+	var books = [];
+	var cart = [];
+	var pageSize = 5;
+	var pageIndex = 0;
+	var cartCount = 0;
+
+	$(document).ready(function () {
+
+		$.ajax({
+			url: "https://localhost:7130/odata/Book",
+			type: "GET",
+			dataType: "json",
+			headers: {
+				"Authorization": localStorage.getItem("jwtToken")
+			},
+			data: { "$expand": "Press,Address" },
+			success: function (data) {
+				data.value.forEach(function (book) {
+					books.push(book);
+				});
+
+				AppendPagination(books.length);
+				AppendTable(books, 0);
+			},
+			error: function (xhr, status, error) {
+				alert(error);
+			}
+		});
+
+		$('#searchInput').on('keyup', function () {
+			var value = $(this).val().toLowerCase();
+
+			var filteredBooks = books.filter(function (book) {
+				return book.Title.toLowerCase().indexOf(value) > -1 || book.Author.toLowerCase().indexOf(value) > -1 || book.Press.Name.toLowerCase().indexOf(value) > -1 || book.Press.Category.toLowerCase().indexOf(value) > -1 || book.ISBN.toLowerCase().indexOf(value) > -1 || book.Address.City.toLowerCase().indexOf(value) > -1 || book.Address.Street.toLowerCase().indexOf(value) > -1;
+			});
+
+			AppendPagination(filteredBooks.length);
+			AppendTable(filteredBooks, 0);
+		});
+
+	});
+
+	function AppendTable(books, currentPageIndex) {
+
+		var slicedBooks = books.slice(currentPageIndex * pageSize, currentPageIndex * pageSize + pageSize);
+
+		$('#dataContainer').empty();
+
+		slicedBooks.forEach(function (book) {
+
+			var newRow = $('<tr>');
+
+			newRow.append($('<td>').text(book.Title));
+			newRow.append($('<td>').text(book.Author));
+			newRow.append($('<td>').text(book.Price));
+			newRow.append($('<td>').text(book.Press.Name));
+			newRow.append($('<td>').text(book.Press.Category));
+			newRow.append($('<td>').text(book.ISBN));
+			newRow.append($('<td>').text(book.Address.City));
+			newRow.append($('<td>').text(book.Address.Street));
+
+			var AddToCartButtonCell = $('<td>');
+
+			AddToCartButtonCell.append($('<button>').text('Add To Cart').attr('id', 'editButton').click(function () {
+				AddToCart(book);
+			}));
+
+			newRow.append(AddToCartButtonCell);
+
+			$('#dataContainer').append(newRow);
+
+		});
+	}
+
+	function AddToCart(book) {
+		cart.push(book);
+		cartCount++;
+		$('#cartCount').text(cartCount);
+	}
+
+	function OpenCart() {
+		
+		var modal = $('<div>').addClass('modal').attr('id', 'cartModal');
+		
+		var modalContent = $('<div>').addClass('modal-content');
+
+		var closeButton = $('<span>').addClass('close').text('×').click(function () {
+			modal.remove();
+		});
+
+		modalContent.append(closeButton);
+
+		var table = $('<table>').addClass('table table-striped table-bordered');
+
+		var thead = $('<thead>').addClass('thead-dark');
+
+		var headrow = $('<tr>');
+
+		var title = $('<td>').text('Title');
+
+		var number = $('<td>').text('Number');
+
+		var remove = $('<td>').text('Remove');
+
+		thead.append(headrow.append(title).append(number).append(remove));
+
+		table.append(thead);
+
+		var tbody = $('<tbody>').addClass('tbody-dark');
+
+		cart.forEach(function (book) {
+			var row = $('<tr>');
+
+			var title = $('<td>').text(book.Title);
+
+			var number = $('<td>').text('1');
+
+			var remove = $('<td>').text('×').click(function () {
+				cart.splice(cart.indexOf(book), 1);
+				cartCount--;
+				$('#cartCount').text(cartCount);
+				row.remove();
+			});
+
+			tbody.append(row.append(title).append(number).append(remove));
+		});
+
+		var checkoutButton = $('<button>').text('Checkout').click(function () {
+			cart.splice(0, cart.length);
+			cartCount = 0;
+			$('#cartCount').text(cartCount);
+			alert('Checkout successful!');
+			modal.remove();
+		});
+
+		modalContent.append(table.append(tbody));
+		modalContent.append(checkoutButton);
+
+		$('#container').append(modal.append(modalContent));
+	}
+
+	function AppendPagination(count) {
+
+		$('#paginationItem').empty();
+
+		var numOfPage = Math.ceil(count / pageSize);
+
+		var prev = $('<button>').addClass('page-link').text('<').click(function () {
+			if (pageIndex > 0) {
+				pageIndex--;
+				AppendTable(books, pageIndex);
+			}
+		});
+
+		$('#paginationItem').append(prev);
+
+		for (var i = 0; i < numOfPage; i++) {
+			(function (index) {
+				var page = $('<button>').addClass('page-link').text(index + 1).click(function () {
+					pageIndex = index;
+					AppendTable(books, index);
+				});
+
+				$('#paginationItem').append(page);
+			})(i);
+		}
+
+
+		var next = $('<button>').addClass('page-link').text('>').click(function () {
+			if (pageIndex < numOfPage) {
+				pageIndex++;
+				AppendTable(books, pageIndex);
+			}
+		});
+
+		$('#paginationItem').append(next);
+
+	}
+</script>
